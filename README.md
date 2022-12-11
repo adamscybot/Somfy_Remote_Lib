@@ -36,7 +36,7 @@ Open the Serial Monitor and set the baud rate to 115200 and set line endings to 
 You can type in the name of the command or the hexadecimal representation of it.
 
 #### Rolling Code Storage
-
+https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/nvs_flash.html#keys-and-values
 This library has a plugable interface for storing the rolling codes, described in [RollingCodeStorage.h](src/RollingCodeStorage.h).
 
 Currently, there are two implementations of the storage available:
@@ -45,6 +45,7 @@ Currently, there are two implementations of the storage available:
 2. [NVS](src/NVSRollingCodeStorage.cpp) - should work on ESP32 with [Non Volatile Storage](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/nvs_flash.html)
 
 Most [examples](examples/) use the EEPROM implementation. See the [ESP32-NVS](examples/ESP32-NVS/ESP32-NVS.ino) example for NVS.
+
 
 #### Available commands
 
@@ -86,3 +87,11 @@ sendCommand(Command::Down, 4);
 Before the emulated Somfy remote can control RTS devices, the remote must be registered.
 Therefore you can refer to the original manual of your RTS device, the only difference is that instead of pressing buttons, the commands from above must be used.
 So for example if the PROG button should be pressed, instead send the `Prog` command.
+
+### Troubleshooting
+
+#### Up/down commands not responsive after successful PROG
+
+If your blinds jump to respond to the PROG command when registering the remote, but following commands like up and down do not respond, it is likely that your rolling code storage is not persisting. The result of this is that the remote will send a constant rolling code, which the blinds will ignore.
+
+In the case of NVS storage, a possible cause for this is that the key used is too long. The key must [comform with the limitations of your microcontroller](https://docs.espressif.com/projects/esp-idf/en/latest/esp32/api-reference/storage/nvs_flash.html#keys-and-values).
